@@ -1,0 +1,409 @@
+{
+  "title": "bro-basic",
+  "services": {
+    "query": {
+      "list": {
+        "0": {
+          "query": "@type=bro_ssl",
+          "alias": "",
+          "color": "#7EB26D",
+          "id": 0,
+          "pin": false,
+          "type": "lucene",
+          "enable": true
+        },
+        "1": {
+          "id": 1,
+          "color": "#EAB839",
+          "alias": "",
+          "pin": false,
+          "type": "lucene",
+          "enable": true,
+          "query": "@type=bro_http"
+        },
+        "2": {
+          "id": 2,
+          "color": "#6ED0E0",
+          "alias": "",
+          "pin": false,
+          "type": "lucene",
+          "enable": true,
+          "query": "@type=bro_conn"
+        }
+      },
+      "ids": [
+        0,
+        1,
+        2
+      ]
+    },
+    "filter": {
+      "list": {},
+      "ids": []
+    }
+  },
+  "rows": [
+    {
+      "title": "Graph",
+      "height": "250px",
+      "editable": true,
+      "collapse": false,
+      "collapsable": true,
+      "panels": [
+        {
+          "error": false,
+          "span": 3,
+          "editable": true,
+          "group": [
+            "default"
+          ],
+          "type": "terms",
+          "queries": {
+            "mode": "all",
+            "ids": [
+              0,
+              1,
+              2
+            ]
+          },
+          "field": "_type",
+          "exclude": [],
+          "missing": true,
+          "other": true,
+          "size": 100,
+          "order": "count",
+          "style": {
+            "font-size": "10pt"
+          },
+          "donut": false,
+          "tilt": false,
+          "labels": true,
+          "arrangement": "horizontal",
+          "chart": "pie",
+          "counter_pos": "none",
+          "title": "Document types",
+          "spyable": true,
+          "tmode": "terms",
+          "tstat": "total",
+          "valuefield": ""
+        },
+        {
+          "span": 9,
+          "editable": true,
+          "type": "histogram",
+          "loadingEditor": false,
+          "mode": "count",
+          "time_field": "@timestamp",
+          "value_field": null,
+          "x-axis": true,
+          "y-axis": true,
+          "scale": 1,
+          "y_format": "none",
+          "grid": {
+            "max": null,
+            "min": 0
+          },
+          "queries": {
+            "mode": "selected",
+            "ids": [
+              0,
+              1,
+              2
+            ]
+          },
+          "annotate": {
+            "enable": false,
+            "query": "*",
+            "size": 20,
+            "field": "_type",
+            "sort": [
+              "_score",
+              "desc"
+            ]
+          },
+          "auto_int": false,
+          "resolution": 100,
+          "interval": "1m",
+          "intervals": [
+            "auto",
+            "1s",
+            "1m",
+            "5m",
+            "10m",
+            "30m",
+            "1h",
+            "3h",
+            "12h",
+            "1d",
+            "1w",
+            "1y"
+          ],
+          "lines": false,
+          "fill": 0,
+          "linewidth": 3,
+          "points": false,
+          "pointradius": 5,
+          "bars": true,
+          "stack": false,
+          "spyable": true,
+          "zoomlinks": true,
+          "options": true,
+          "legend": true,
+          "show_query": true,
+          "interactive": true,
+          "legend_counts": true,
+          "timezone": "browser",
+          "percentage": false,
+          "zerofill": true,
+          "derivative": false,
+          "tooltip": {
+            "value_type": "cumulative",
+            "query_as_alias": true
+          }
+        }
+      ],
+      "notice": false
+    },
+    {
+      "title": "SSL",
+      "height": "300px",
+      "editable": true,
+      "collapse": false,
+      "collapsable": true,
+      "panels": [
+        {
+          "error": false,
+          "span": 12,
+          "editable": true,
+          "group": [
+            "default"
+          ],
+          "type": "table",
+          "size": 100,
+          "pages": 5,
+          "offset": 0,
+          "sort": [
+            "server_name",
+            "desc"
+          ],
+          "style": {
+            "font-size": "9pt"
+          },
+          "overflow": "min-height",
+          "fields": [
+            "ts",
+            "id.orig_h",
+            "id.resp_h",
+            "id.resp_p",
+            "version",
+            "cipher",
+            "server_name",
+            "client_issuer_subject",
+            "client_subject",
+            "validation_status"
+          ],
+          "highlight": [],
+          "sortable": true,
+          "header": true,
+          "paging": true,
+          "spyable": true,
+          "queries": {
+            "mode": "selected",
+            "ids": [
+              0
+            ]
+          },
+          "field_list": false,
+          "status": "Stable",
+          "trimFactor": 5000,
+          "normTimes": true,
+          "title": "SSL",
+          "all_fields": false,
+          "localTime": false,
+          "timeField": "@timestamp"
+        },
+        {
+          "error": false,
+          "span": 12,
+          "editable": true,
+          "type": "table",
+          "loadingEditor": false,
+          "size": 100,
+          "pages": 5,
+          "offset": 0,
+          "sort": [
+            "_score",
+            "desc"
+          ],
+          "overflow": "min-height",
+          "fields": [
+            "ts",
+            "id.orig_h",
+            "id.resp_h",
+            "id.resp_p",
+            "host",
+            "method",
+            "uri",
+            "status_code",
+            "resp_mime_types",
+            "user_agent",
+            "referrer"
+          ],
+          "highlight": [],
+          "sortable": true,
+          "header": true,
+          "paging": true,
+          "field_list": false,
+          "all_fields": false,
+          "trimFactor": 500,
+          "localTime": false,
+          "timeField": "@timestamp",
+          "spyable": true,
+          "queries": {
+            "mode": "selected",
+            "ids": [
+              1
+            ]
+          },
+          "style": {
+            "font-size": "9pt"
+          },
+          "normTimes": true,
+          "title": "HTTP"
+        },
+        {
+          "error": false,
+          "span": 12,
+          "editable": true,
+          "type": "table",
+          "loadingEditor": false,
+          "size": 100,
+          "pages": 5,
+          "offset": 0,
+          "sort": [
+            "_score",
+            "desc"
+          ],
+          "overflow": "min-height",
+          "fields": [
+            "ts",
+            "proto",
+            "id.orig_h",
+            "id.orig_p",
+            "id.resp_h",
+            "id.resp_p",
+            "service",
+            "orig_bytes",
+            "orig_pkts",
+            "resp_bytes",
+            "resp_pkts",
+            "duration"
+          ],
+          "highlight": [],
+          "sortable": true,
+          "header": true,
+          "paging": true,
+          "field_list": false,
+          "all_fields": false,
+          "trimFactor": 300,
+          "localTime": false,
+          "timeField": "@timestamp",
+          "spyable": true,
+          "queries": {
+            "mode": "selected",
+            "ids": [
+              2
+            ]
+          },
+          "style": {
+            "font-size": "9pt"
+          },
+          "normTimes": true,
+          "title": "conn"
+        }
+      ],
+      "notice": false
+    }
+  ],
+  "editable": true,
+  "index": {
+    "interval": "none",
+    "pattern": "[logstash-]YYYY.MM.DD",
+    "default": "_all",
+    "warm_fields": false
+  },
+  "style": "dark",
+  "failover": false,
+  "panel_hints": true,
+  "loader": {
+    "save_gist": false,
+    "save_elasticsearch": true,
+    "save_local": true,
+    "save_default": true,
+    "save_temp": true,
+    "save_temp_ttl_enable": true,
+    "save_temp_ttl": "30d",
+    "load_gist": true,
+    "load_elasticsearch": true,
+    "load_elasticsearch_size": 20,
+    "load_local": true,
+    "hide": false
+  },
+  "pulldowns": [
+    {
+      "type": "query",
+      "collapse": false,
+      "notice": false,
+      "query": "*",
+      "pinned": true,
+      "history": [
+        "@type=bro_conn",
+        "@type=bro_http",
+        "@type=bro_ssl",
+        "*"
+      ],
+      "remember": 10,
+      "enable": true
+    },
+    {
+      "type": "filtering",
+      "collapse": true,
+      "notice": false,
+      "enable": true
+    }
+  ],
+  "nav": [
+    {
+      "type": "timepicker",
+      "collapse": false,
+      "notice": false,
+      "status": "Stable",
+      "time_options": [
+        "5m",
+        "15m",
+        "1h",
+        "6h",
+        "12h",
+        "24h",
+        "2d",
+        "7d",
+        "30d"
+      ],
+      "refresh_intervals": [
+        "5s",
+        "10s",
+        "30s",
+        "1m",
+        "5m",
+        "15m",
+        "30m",
+        "1h",
+        "2h",
+        "1d"
+      ],
+      "timefield": "@timestamp",
+      "enable": true
+    }
+  ],
+  "refresh": false
+}

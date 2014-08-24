@@ -1,0 +1,6 @@
+[program:logstash]
+command = /opt/logstash/bin/logstash agent -f /etc/logstash/conf.d -l /var/log/logstash.log
+redirect_stderr=true
+stdout_logfile=/var/log/supervisor/logstash.log
+
+

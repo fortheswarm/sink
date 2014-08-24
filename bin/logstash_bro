@@ -1,0 +1,51 @@
+CONTAINER=`basename $1`
+(cat << EOF
+input {
+  file {
+    type => "bro_conn"
+    path => "/sink/bro/$CONTAINER/conn.log"
+  }
+  file {
+    type => "bro_http"
+    path => "/sink/bro/$CONTAINER/http.log"
+  }  
+  file {
+    type => "bro_ssl"
+    path => "/sink/bro/$CONTAINER/ssl.log"
+  }
+}
+filter { 
+  if [message] =~ /^#/ {
+    drop {  }
+  } else {  
+    if [type] == "bro_http" {
+        grok { 
+         match => [ "message", "(?<ts>(.*?))\t(?<uid>(.*?))\t(?<id.orig_h>(.*?))\t(?<id.orig_p>(.*?))\t(?<id.resp_h>(.*?))\t(?<id.resp_p>(.*?))\t(?<trans_depth>(.*?))\t(?<method>(.*?))\t(?<host>(.*?))\t(?<uri>(.*?))\t(?<referrer>(.*?))\t(?<user_agent>(.*?))\t(?<request_body_len>(.*?))\t(?<response_body_len>(.*?))\t(?<status_code>(.*?))\t(?<status_msg>(.*?))\t(?<info_code>(.*?))\t(?<info_msg>(.*?))\t(?<filename>(.*?))\t(?<tags>(.*?))\t(?<username>(.*?))\t(?<password>(.*?))\t(?<proxied>(.*?))\t(?<orig_fuids>(.*?))\t(?<orig_mime_types>(.*?))\t(?<resp_fuids>(.*?))\t(?<resp_mime_types>(.*))" ]
+       }
+    }
+    if [type] == "bro_ssl" {
+      grok { 
+        match => [ "message", "(?<ts>(.*?))\t(?<uid>(.*?))\t(?<id.orig_h>(.*?))\t(?<id.orig_p>(.*?))\t(?<id.resp_h>(.*?))\t(?<id.resp_p>(.*?))\t(?<version>(.*?))\t(?<cipher>(.*?))\t(?<server_name>(.*?))\t(?<session_id>(.*?))\t(?<subject>(.*?))\t(?<issuer_subject>(.*?))\t(?<not_valid_before>(.*?))\t(?<not_valid_after>(.*?))\t(?<last_alert>(.*?))\t(?<client_subject>(.*?))\t(?<client_issuer_subject>(.*?))\t(?<cert_hash>(.*?))\t(?<validation_status>(.*))" ]
+      }
+    }
+    if [type] == "bro_conn" {
+      grok {
+        match => [ "message", "(?<ts>(.*?))\t(?<uid>(.*?))\t(?<id.orig_h>(.*?))\t(?<id.orig_p>(.*?))\t(?<id.resp_h>(.*?))\t(?<id.resp_p>(.*?))\t(?<proto>(.*?))\t(?<service>(.*?))\t(?<duration>(.*?))\t(?<orig_bytes>(.*?))\t(?<resp_bytes>(.*?))\t(?<conn_state>(.*?))\t(?<local_orig>(.*?))\t(?<missed_bytes>(.*?))\t(?<history>(.*?))\t(?<orig_pkts>(.*?))\t(?<orig_ip_bytes>(.*?))\t(?<resp_pkts>(.*?))\t(?<resp_ip_bytes>(.*?))\t(?<tunnel_parents>(.*))" ]
+      }
+    }
+
+    date {
+      match => [ "ts", "UNIX" ]
+    }
+  }
+}
+output { 
+  elasticsearch {
+    host => localhost
+    index => "bro"
+  }
+}
+
+EOF
+) > /etc/logstash/conf.d/bro_$CONTAINER.conf
+supervisorctl restart logstash

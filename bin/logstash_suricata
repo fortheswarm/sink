@@ -1,0 +1,39 @@
+CONTAINER=`basename $1`
+(cat << EOF
+input {
+  file { 
+    path => ["/sink/suricata/$CONTAINER/eve.json"]
+    codec =>   json 
+    type => "suricata-logs" 
+  }
+
+}
+
+filter {
+    date {
+      match => [ "timestamp", "ISO8601" ]
+    }
+
+  if [src_ip]  {
+    geoip {
+      source => "src_ip" 
+      target => "geoip" 
+      database => "/opt/logstash/vendor/geoip/GeoLiteCity.dat" 
+      add_field => [ "[geoip][coordinates]", "%{[geoip][longitude]}" ]
+      add_field => [ "[geoip][coordinates]", "%{[geoip][latitude]}"  ]
+    }
+    mutate {
+      convert => [ "[geoip][coordinates]", "float" ]
+    }
+  }
+}
+
+output { 
+  elasticsearch {
+    host => localhost
+    index => "suricata"
+  }
+}
+EOF
+) > /etc/logstash/conf.d/suricata_$CONTAINER.conf
+supervisorctl restart logstash

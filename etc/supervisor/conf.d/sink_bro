@@ -1,0 +1,5 @@
+[program:sink_bro]
+command = /usr/bin/iwatch -e create,isdir -c 'test %%e != IN_ISDIR,IN_CREATE || logstash_bro %%f' /sink/bro
+redirect_stderr=true
+stdout_logfile=/var/log/supervisor/sink_bro.log
+
