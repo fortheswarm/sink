@@ -22,6 +22,7 @@ RUN echo '#!/bin/sh\nexit 101' > /usr/sbin/policy-rc.d && \
 RUN apt-get -qq update && apt-get -qq install nginx wget supervisor \
     software-properties-common iwatch unzip
 RUN true
+
 # elasticsearch
 RUN wget -O - http://packages.elasticsearch.org/GPG-KEY-elasticsearch \
     | apt-key add -
@@ -67,6 +68,8 @@ ADD /etc/supervisor/conf.d/sink_suricata /etc/supervisor/conf.d/
 ADD /bin/logstash_bro /bin/
 ADD /bin/logstash_suricata /bin/
 RUN chmod +x /bin/logstash_bro /bin/logstash_suricata
+
+RUN mkdir /sink/bro; mkdir /sink/suricata
 
 EXPOSE 80
 ENTRYPOINT ["/usr/bin/supervisord"]
