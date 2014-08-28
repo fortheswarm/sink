@@ -69,7 +69,7 @@ ADD /bin/logstash_bro /bin/
 ADD /bin/logstash_suricata /bin/
 RUN chmod +x /bin/logstash_bro /bin/logstash_suricata
 
-RUN mkdir /sink/bro; mkdir /sink/suricata
+RUN mkdir -p /sink/bro; mkdir -p /sink/suricata
 
 EXPOSE 80
 ENTRYPOINT ["/usr/bin/supervisord"]
