@@ -21,7 +21,6 @@ RUN echo '#!/bin/sh\nexit 101' > /usr/sbin/policy-rc.d && \
 
 RUN apt-get -qq update && apt-get -qq install nginx wget supervisor \
     software-properties-common iwatch unzip
-RUN true
 
 # elasticsearch
 RUN wget -O - http://packages.elasticsearch.org/GPG-KEY-elasticsearch \
@@ -35,10 +34,13 @@ ADD /etc/supervisor/conf.d/elasticsearch /etc/supervisor/conf.d/
 # kibana/nginx
 WORKDIR /opt/
 ADD https://download.elasticsearch.org/kibana/kibana/kibana-$KIBANA_VERSION.tar.gz /opt/
-RUN tar xzf kibana-$KIBANA_VERSION.tar.gz && rm kibana-$KIBANA_VERSION.tar.gz 
-RUN mkdir -p /var/www
-RUN ln -s /opt/kibana-$KIBANA_VERSION /var/www/kibana
-RUN sed -i 's/9200"/"+ window.location.port/g' /var/www/kibana/config.js 
+RUN \
+  tar xzf kibana-$KIBANA_VERSION.tar.gz && \
+  rm kibana-$KIBANA_VERSION.tar.gz && \
+  mkdir -p /var/www && \
+  ln -s /opt/kibana-$KIBANA_VERSION /var/www/kibana && \
+  sed -i 's/9200"/"+ window.location.port/g' /var/www/kibana/config.js
+
 WORKDIR /etc/nginx/
 RUN if ! grep "daemon off" nginx.conf ; \
     then sed -i '/worker_processes.*/a daemon off;' nginx.conf;fi
@@ -53,9 +55,11 @@ ADD /opt/kibana/app/dashboards/suricata.json /opt/kibana-$KIBANA_VERSION/app/das
 
 # logstash
 WORKDIR /opt/
-RUN apt-add-repository \
-    'deb http://packages.elasticsearch.org/logstash/1.4/debian stable main'
-RUN apt-get -qq update && apt-get install logstash
+RUN \
+    apt-add-repository \
+    'deb http://packages.elasticsearch.org/logstash/1.4/debian stable main' && \
+    apt-get -qq update && \
+    apt-get install logstash
 ADD /etc/logstash/conf.d/dummy.conf /etc/logstash/conf.d/
 ADD /etc/supervisor/conf.d/logstash /etc/supervisor/conf.d/
 
@@ -67,9 +71,10 @@ ADD /etc/supervisor/conf.d/sink_bro /etc/supervisor/conf.d/
 ADD /etc/supervisor/conf.d/sink_suricata /etc/supervisor/conf.d/
 ADD /bin/logstash_bro /bin/
 ADD /bin/logstash_suricata /bin/
-RUN chmod +x /bin/logstash_bro /bin/logstash_suricata
-
-RUN mkdir -p /sink/bro; mkdir -p /sink/suricata
+RUN \
+  chmod +x /bin/logstash_bro /bin/logstash_suricata && \
+  mkdir -p /sink/bro && \
+  mkdir -p /sink/suricata
 
 EXPOSE 80
 ENTRYPOINT ["/usr/bin/supervisord"]
