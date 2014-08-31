@@ -1,4 +1,0 @@
-[program:sink_suricata]
-command = /usr/bin/iwatch -e create,isdir -c 'test %%e != IN_ISDIR,IN_CREATE || logstash_suricata %%f' /sink/suricata
-redirect_stderr=true
-stdout_logfile=/var/log/supervisor/sink_suricata.log

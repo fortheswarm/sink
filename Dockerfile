@@ -1,7 +1,6 @@
 # strcrzy/sink
 # a debian based docker image that includes:
 #   - elasticsearch, logstash, kibana
-#   - iwatch, watchers for bro and suricata logs from sensor containers
 #   - kibana dashboards for bro and suricata
 # soon:
 #   - logstash grok patterns for bro
@@ -20,7 +19,7 @@ RUN echo '#!/bin/sh\nexit 101' > /usr/sbin/policy-rc.d && \
     chmod +x /usr/sbin/policy-rc.d
 
 RUN apt-get -qq update && apt-get -qq install nginx wget supervisor \
-    software-properties-common iwatch unzip
+    software-properties-common unzip
 
 # elasticsearch
 RUN wget -O - http://packages.elasticsearch.org/GPG-KEY-elasticsearch \
@@ -60,21 +59,13 @@ RUN \
     'deb http://packages.elasticsearch.org/logstash/1.4/debian stable main' && \
     apt-get -qq update && \
     apt-get install logstash
-ADD /etc/logstash/conf.d/dummy.conf /etc/logstash/conf.d/
+ADD /etc/logstash/conf.d/bro.conf /etc/logstash/conf.d/
+ADD /etc/logstash/conf.d/suricata.conf /etc/logstash/conf.d/
 ADD /etc/supervisor/conf.d/logstash /etc/supervisor/conf.d/
 
 ADD /etc/supervisor/supervisord.conf /etc/supervisor/
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# iwatch
-ADD /etc/supervisor/conf.d/sink_bro /etc/supervisor/conf.d/
-ADD /etc/supervisor/conf.d/sink_suricata /etc/supervisor/conf.d/
-ADD /bin/logstash_bro /bin/
-ADD /bin/logstash_suricata /bin/
-RUN \
-  chmod +x /bin/logstash_bro /bin/logstash_suricata && \
-  mkdir -p /sink/bro && \
-  mkdir -p /sink/suricata
 
 EXPOSE 80
 ENTRYPOINT ["/usr/bin/supervisord"]
